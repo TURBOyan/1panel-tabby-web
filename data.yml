@@ -1,0 +1,18 @@
+additionalProperties:
+  key: tabby-web
+  name: Tabby Web
+  tags:
+    - WebSite
+    - Security
+    - Local
+  shortDescZh: 浏览器里的 Tabby 终端，支持 SSH / Telnet 连接
+  shortDescEn: Tabby terminal in your browser, with SSH/Telnet support
+  type: website
+  crossVersionUpdate: false
+  limit: 0
+  website: https://github.com/Eugeny/tabby-web
+  github: https://github.com/Eugeny/tabby-web
+  document: https://github.com/Eugeny/tabby-web/blob/master/docs/DEPLOYMENT.md
+  architectures:
+    - amd64
+    - arm64

@@ -1,0 +1,77 @@
+networks:
+  1panel-network:
+    external: true
+  tabby-network:
+    driver: bridge
+
+services:
+  tabby-db:
+    image: mariadb:10.7.1
+    container_name: ${CONTAINER_NAME}-db
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/mysql
+    env_file:
+      - ${GLOBAL_ENV_FILE:-/etc/1panel/envs/global.env}
+      - ${ENV_FILE:-/etc/1panel/envs/default.env}
+    environment:
+      MARIADB_DATABASE: tabby
+      MARIADB_USER: tabby
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - tabby-network
+    healthcheck:
+      test: [ "CMD-SHELL", "MYSQL_PWD=$${MARIADB_PASSWORD} mariadb-admin ping -u$${MARIADB_USER} --silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  tabby:
+    image: ghcr.io/eugeny/tabby-web:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    depends_on:
+      tabby-db:
+        condition: service_healthy
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:80"
+    labels:
+      createdBy: "Apps"
+    volumes:
+      - tabby-app-dist:/app-dist
+    env_file:
+      - ${GLOBAL_ENV_FILE:-/etc/1panel/envs/global.env}
+      - ${ENV_FILE:-/etc/1panel/envs/default.env}
+    environment:
+      DATABASE_URL: mysql://tabby:${DB_PASSWORD}@tabby-db/tabby
+      GUNICORN_CMD_ARGS: --bind=0.0.0.0:80 --access-logfile=- --error-logfile=-
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      APP_DIST_STORAGE: file:///app-dist
+      CORS_EXTRA_URL: ${PANEL_APP_URL:-}
+    networks:
+      - tabby-network
+      - 1panel-network
+
+  tabby-gateway:
+    image: ghcr.io/eugeny/tabby-connection-gateway:v0.3.0
+    container_name: ${CONTAINER_NAME}-gateway
+    restart: always
+    command: [ "--token-auth", "--host", "0.0.0.0", "--port", "9000" ]
+    ports:
+      - "${PANEL_APP_PORT_GATEWAY}:9000"
+    labels:
+      createdBy: "Apps"
+    env_file:
+      - ${GLOBAL_ENV_FILE:-/etc/1panel/envs/global.env}
+      - ${ENV_FILE:-/etc/1panel/envs/default.env}
+    environment:
+      TABBY_AUTH_TOKEN: ${GATEWAY_AUTH_TOKEN}
+    networks:
+      - tabby-network
+      - 1panel-network
+
+volumes:
+  tabby-app-dist:
+

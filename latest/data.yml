@@ -1,0 +1,87 @@
+additionalProperties:
+  formFields:
+    - default: 9090
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: WebUI Port
+      labelZh: 网页端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 9001
+      edit: true
+      envKey: PANEL_APP_PORT_GATEWAY
+      labelEn: Connection Gateway Port
+      labelZh: 连接网关端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: ""
+      edit: true
+      envKey: GATEWAY_AUTH_TOKEN
+      labelZh: 连接网关令牌
+      labelEn: Connection Gateway Token
+      required: true
+      type: password
+    - default: ""
+      edit: true
+      envKey: DJANGO_SECRET_KEY
+      labelZh: 签名密钥
+      labelEn: Django secret key
+      required: true
+      type: password
+    - default: "tabby"
+      edit: true
+      envKey: DB_PASSWORD
+      labelZh: 数据库密码
+      labelEn: Database password
+      required: true
+      type: password
+    - default: "github"
+      edit: true
+      envKey: SOCIAL_AUTH_PROVIDER
+      labelZh: 登录方式
+      labelEn: Login Provider
+      required: true
+      type: select
+      values:
+        - label: GitHub
+          value: github
+        - label: GitLab
+          value: gitlab
+        - label: Google
+          value: google
+        - label: Microsoft
+          value: microsoft
+        - label: Azure AD（单租户）
+          value: azuread
+        - label: 通用 OIDC
+          value: oidc
+    - default: ""
+      edit: true
+      envKey: SOCIAL_AUTH_KEY
+      labelZh: OAuth Client ID
+      labelEn: OAuth Client ID
+      required: true
+      type: text
+    - default: ""
+      edit: true
+      envKey: SOCIAL_AUTH_SECRET
+      labelZh: OAuth Client Secret
+      labelEn: OAuth Client Secret
+      required: true
+      type: password
+    - default: ""
+      edit: true
+      envKey: SOCIAL_AUTH_EXTRA
+      labelZh: 额外参数（OIDC 填 discovery endpoint，Azure AD 填 Tenant ID，其余留空）
+      labelEn: "Extra parameter (OIDC: discovery endpoint, Azure AD: tenant ID, otherwise blank)"
+      required: false
+      type: text
+    - default: ""
+      edit: true
+      envKey: PANEL_APP_URL
+      labelZh: 对外访问地址（OAuth 回调必需，如 https://tabby.example.com）
+      labelEn: "Public base URL (required for the OAuth callback, e.g. https://tabby.example.com)"
+      required: false
+      type: text
